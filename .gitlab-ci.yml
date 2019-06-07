@@ -27,7 +27,7 @@ base:
 
 client:
   stage: build
-  dependencies: base
+  dependencies: [base]
   variables:
     REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd/client
   only:
@@ -39,7 +39,7 @@ client:
 
 server:
   stage: build
-  dependencies: base
+  dependencies: [base]
   variables:
     REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd/server
   only:
