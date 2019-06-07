@@ -1,6 +1,6 @@
 image: docker:stable
 
-stage:
+stages:
   - base
 
 variables:
