@@ -1,6 +1,10 @@
+use std::io;
+use std::fs::File;
+
 use serde::Deserialize;
-use std::env;
 use log::info;
+
+use serde_json::from_reader;
 
 #[derive(Clone, Debug, Deserialize)]
 struct Agent {
@@ -13,16 +17,16 @@ struct Settings {
     agents: Vec<Agent>,
 }
 
-fn get_settings() -> Settings {
+fn get_settings() -> io::Result<Settings> {
+    let file = File::open("/etc/backupd/config.json")?;
+    let agents = from_reader(file)?;
 
-    Settings {
-        agents: Vec::new(),
-    }
+    Ok(Settings { agents, })
 }
 
 fn main() {
     env_logger::init();
 
     info!("Loading settings...");
-    let _settings = get_settings();
+    let _settings = get_settings().expect("Unable to load settings");
 }
