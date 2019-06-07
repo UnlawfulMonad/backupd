@@ -7,3 +7,5 @@ workspace = "../"
 
 [dependencies]
 backupd = { path = "../" }
+log = "^0.4.6"
+env_logger = "^0.6.1"
