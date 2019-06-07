@@ -8,9 +8,15 @@ enum AgentSource {
 }
 
 #[derive(Clone, Debug)]
+struct Agent {
+    name: String,
+    secret: String,
+}
+
+#[derive(Clone, Debug)]
 struct Settings {
+    agents: Vec<Agent>,
     agent_source: AgentSource,
-    agents: Vec<String>,
 }
 
 fn get_settings() -> Settings {
