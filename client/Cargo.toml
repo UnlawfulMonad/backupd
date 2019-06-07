@@ -1,0 +1,9 @@
+[package]
+name = "client"
+version = "0.1.0"
+authors = ["Lucas Salibian <lucas.salibian@gmail.com>"]
+edition = "2018"
+workspace = "../"
+
+[dependencies]
+backupd = { path = "../" }
