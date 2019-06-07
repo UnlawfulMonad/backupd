@@ -2,6 +2,7 @@ image: docker:stable
 
 stages:
   - base
+  - build
 
 variables:
   DOCKER_HOST: tcp://docker:2375
@@ -22,4 +23,28 @@ base:
       - master
   script:
     - docker build -t ${REGISTRY_PATH}:latest .
+    - docker push ${REGISTRY_PATH}:latest
+
+client:
+  stage: build
+  dependencies: base
+  variables:
+    REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd/client
+  only:
+    refs:
+      - master
+  script:
+    - docker build -t ${REGISTRY_PATH}:latest ./client/
+    - docker push ${REGISTRY_PATH}:latest
+
+server:
+  stage: build
+  dependencies: base
+  variables:
+    REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd/server
+  only:
+    refs:
+      - master
+  script:
+    - docker build -t ${REGISTRY_PATH}:latest ./server/
     - docker push ${REGISTRY_PATH}:latest
