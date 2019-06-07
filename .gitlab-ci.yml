@@ -13,7 +13,7 @@ services:
 before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
 
-base:client:
+base-client:
   stage: base
   variables:
     REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd/client
@@ -24,7 +24,7 @@ base:client:
     - docker build -t ${REGISTRY_PATH}:latest client/
     - docker push ${REGISTRY_PATH}:latest
 
-base:server:
+base-server:
   stage: base
   variables:
     REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd/server
