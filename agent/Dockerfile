@@ -4,5 +4,5 @@ FROM debian:stretch
 RUN apt-get update && \
     apt-get install -y openssl && \
     apt-get clean
-COPY --from=build /code/target/release/client /backupd-client
-ENTRYPOINT ["/backupd-client"]
+COPY --from=build /code/target/release/agent /backupd-agent
+ENTRYPOINT ["/backupd-agent"]

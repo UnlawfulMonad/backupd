@@ -25,16 +25,16 @@ base:
     - docker build -t ${REGISTRY_PATH}:latest .
     - docker push ${REGISTRY_PATH}:latest
 
-client:
+agent:
   stage: build
   dependencies: [base]
   variables:
-    REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd/client
+    REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd/agent
   only:
     refs:
       - master
   script:
-    - docker build -t ${REGISTRY_PATH}:latest ./client/
+    - docker build -t ${REGISTRY_PATH}:latest ./agent/
     - docker push ${REGISTRY_PATH}:latest
 
 server:

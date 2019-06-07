@@ -1,5 +1,7 @@
 use serde::{Serialize, Deserialize};
 
+/// A handshake message is the first thing sent by the server after establishing
+/// a connection to the agent.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Handshake {
     pub version: u64,
