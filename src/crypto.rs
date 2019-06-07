@@ -76,15 +76,19 @@ impl<R: Read> Read for Decrypter<R> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rand::prelude::*;
 
     #[test]
     fn test_encrypter() {
+        let mut rng = rand::thread_rng();
+        let mut key = [0u8; 32];
+        let mut iv = [0u8; 32];
+        rng.fill(&mut key);
+        rng.fill(&mut iv);
+
         let mut buf = Vec::with_capacity(1024);
-        let key = b"fkri28fjantueofnskfdskoea guHd23";
-        let iv  = b"ksorsdfgkhi4iuyt43noqiewr&moaias";
-        assert_eq!(key.len(), 32);
-        assert_eq!(iv.len(), 32);
-        let mut e = Encrypter::new(&mut buf, key, iv);
+
+        let mut e = Encrypter::new(&mut buf, &key, &iv);
         e.write(b"test").unwrap();
         let (_, tag) = e.finalize().unwrap();
         assert_eq!(tag.len(), 16);
