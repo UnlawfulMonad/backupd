@@ -10,6 +10,7 @@ rmp-serde = "0.13.7"
 
 openssl = "^0.10.23"
 rand = "^0.6.5"
+memmap = "^0.7.0"
 
 [workspace]
 members = ["./server/", "./agent/"]
