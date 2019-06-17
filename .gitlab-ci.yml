@@ -1,7 +1,6 @@
 image: docker:stable
 
 stages:
-  - base
   - build
 
 variables:
@@ -14,37 +13,13 @@ services:
 before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
 
-base:
-  stage: base
+build:
+  stage: build
   variables:
-    REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd/base
+    REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd
   only:
     refs:
       - master
   script:
     - docker build -t ${REGISTRY_PATH}:latest .
-    - docker push ${REGISTRY_PATH}:latest
-
-agent:
-  stage: build
-  dependencies: [base]
-  variables:
-    REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd/agent
-  only:
-    refs:
-      - master
-  script:
-    - docker build -t ${REGISTRY_PATH}:latest ./agent/
-    - docker push ${REGISTRY_PATH}:latest
-
-server:
-  stage: build
-  dependencies: [base]
-  variables:
-    REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd/server
-  only:
-    refs:
-      - master
-  script:
-    - docker build -t ${REGISTRY_PATH}:latest ./server/
     - docker push ${REGISTRY_PATH}:latest
