@@ -26,7 +26,7 @@ mod test {
 
     #[test]
     fn test_serialize_handshake() {
-        let hs = Handshake { version: 0 };
+        let hs = Handshake { version: 0, name: String::new(), secret: String::new() };
         let hs_bin = pack(&hs).unwrap();
         let hs_deserialized = unpack(&hs_bin[..]).unwrap();
         assert_eq!(hs, hs_deserialized);
