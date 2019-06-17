@@ -1,8 +1,10 @@
 use std::io;
 use std::fs::File;
+use std::thread;
+use std::net::TcpListener;
 
 use serde::Deserialize;
-use log::info;
+use log::{info, debug, trace};
 
 use serde_json::from_reader;
 
@@ -29,4 +31,15 @@ fn main() {
 
     info!("Loading settings...");
     let _settings = get_settings().expect("Unable to load settings");
+
+    let listener = TcpListener::bind("").expect("Unable to bind");
+    loop {
+        let (stream, addr) = listener.accept().expect("Failed to accept connection...");
+        debug!("Got connection from {:?}", addr);
+
+        thread::spawn(move || {
+            trace!("Connection info: TTL={}", stream.ttl().unwrap());
+
+        });
+    }
 }
