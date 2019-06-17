@@ -9,15 +9,11 @@ pub struct Handshake {
     pub secret: String,
 }
 
+// The start of a file stream.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct FileHeader {
     pub path: String,
-}
-
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct Frame {
-    pub last: bool,
-    pub data: Vec<u8>,
+    pub size: u64,
 }
 
 #[cfg(test)]

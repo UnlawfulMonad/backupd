@@ -1,6 +1,7 @@
 image: docker:stable
 
 stages:
+  - test
   - build
 
 variables:
@@ -10,8 +11,14 @@ variables:
 services:
   - docker:dind
 
-before_script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+cache:
+  key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
+
+test:debug:
+  stage: test
+  image: rust:1.35.0
+  script:
+    - cargo test --all
 
 build:
   stage: build
@@ -21,5 +28,6 @@ build:
     refs:
       - master
   script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
     - docker build -t ${REGISTRY_PATH}:latest .
     - docker push ${REGISTRY_PATH}:latest
