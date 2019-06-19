@@ -1,7 +1,9 @@
 use std::io;
 use std::fs::File;
 use std::thread;
-use std::net::TcpListener;
+use std::net::{TcpListener, TcpStream};
+
+use backupd::Handshake;
 
 use serde::Deserialize;
 use log::{info, debug, trace};
@@ -26,6 +28,10 @@ fn get_settings() -> io::Result<Settings> {
     Ok(Settings { agents, })
 }
 
+fn server_handler(stream: TcpStream) {
+    let _handshake: Handshake = rmp_serde::from_read(stream).expect("Failed to read handshake");
+}
+
 fn main() {
     env_logger::init();
 
@@ -39,7 +45,7 @@ fn main() {
 
         thread::spawn(move || {
             trace!("Connection info: TTL={}", stream.ttl().unwrap());
-
+            server_handler(stream);
         });
     }
 }
