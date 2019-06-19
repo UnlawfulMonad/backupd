@@ -13,3 +13,5 @@ RUN apt-get update && \
 
 COPY --from=build /code/target/release/server /server
 COPY --from=build /code/target/release/agent /agent
+COPY scripts/docker-entrypoint.sh /docker-entrypoint.sh
+CMD ["/bin/sh", "/docker-entrypoint.sh"]
