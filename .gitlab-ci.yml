@@ -13,11 +13,6 @@ test:debug:
   script:
     - cargo test --all
 
-test:release:
-  stage: test
-  script:
-    - cargo test --all --release
-
 build:
   stage: build
   image: docker:stable
