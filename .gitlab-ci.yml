@@ -1,15 +1,8 @@
-image: docker:stable
+image: rust:1.35.0
 
 stages:
   - test
   - build
-
-variables:
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_DRIVER: overlay2
-
-services:
-  - docker:dind
 
 cache:
   key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
@@ -22,14 +15,18 @@ test:debug:
 
 test:release:
   stage: test
-  image: rust:1.35.0
   script:
     - cargo test --all --release
 
 build:
   stage: build
+  image: docker:stable
+  services:
+    - docker:dind
   variables:
     REGISTRY_PATH: registry.gitlab.com/lucas_pl/backupd
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
   only:
     refs:
       - master
