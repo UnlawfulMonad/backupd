@@ -20,6 +20,12 @@ test:debug:
   script:
     - cargo test --all
 
+test:release:
+  stage: test
+  image: rust:1.35.0
+  script:
+    - cargo test --all --release
+
 build:
   stage: build
   variables:
