@@ -28,8 +28,10 @@ fn get_settings() -> io::Result<Settings> {
     Ok(Settings { agents, })
 }
 
-fn server_handler(stream: TcpStream) {
+fn server_handler(stream: TcpStream) -> io::Result<()> {
     let _handshake: Handshake = rmp_serde::from_read(stream).expect("Failed to read handshake");
+
+    Ok(())
 }
 
 fn main() {
@@ -45,7 +47,9 @@ fn main() {
 
         thread::spawn(move || {
             trace!("Connection info: TTL={}", stream.ttl().unwrap());
-            server_handler(stream);
+            if let Err(err) = server_handler(stream) {
+                eprintln!("Got error from thread handler for {}: {:?}", addr, err);
+            }
         });
     }
 }
