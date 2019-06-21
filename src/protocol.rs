@@ -9,7 +9,9 @@ pub struct Handshake {
     pub secret: String,
 }
 
-// The start of a file stream.
+/// The start of a file stream.
+/// Following this message is a file `size` bytes long to be included in the current
+/// backup operation.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct FileHeader {
     pub path: String,

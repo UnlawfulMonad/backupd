@@ -2,6 +2,7 @@ use std::io;
 use std::fs::File;
 use std::thread;
 use std::net::{TcpListener, TcpStream};
+use openssl::memcmp;
 
 use backupd::Handshake;
 
@@ -10,10 +11,26 @@ use log::{info, debug, trace};
 
 use serde_json::from_reader;
 
+/// Represents a backup agent.
 #[derive(Clone, Debug, Deserialize)]
-struct Agent {
+pub struct Agent {
     name: String,
     secret: String,
+}
+
+impl Agent {
+    /// Get the name of the agent.
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn secret_matches(&self, s: &str) -> bool {
+        if self.secret.len() != s.len() {
+            return false;
+        }
+
+        memcmp::eq(self.secret.as_bytes(), s.as_bytes())
+    }
 }
 
 #[derive(Clone, Debug)]
