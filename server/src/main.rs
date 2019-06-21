@@ -41,10 +41,9 @@ struct Settings {
 
 fn get_settings() -> io::Result<Settings> {
     let file_path = match env::var("CONFIG_FILE") {
+        Ok(ref val) if val == "" => "./config.json".into(),
         Ok(val) => val,
-        Err(env::VarError::NotPresent) => {
-            "./config.json".into()
-        },
+        Err(env::VarError::NotPresent) => "./config.json".into(),
         Err(err) => panic!(err),
     };
 
