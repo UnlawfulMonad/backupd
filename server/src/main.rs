@@ -1,6 +1,7 @@
 use std::io;
-use std::fs::File;
+use std::env;
 use std::thread;
+use std::fs::File;
 use std::net::{TcpListener, TcpStream};
 use openssl::memcmp;
 
@@ -39,7 +40,15 @@ struct Settings {
 }
 
 fn get_settings() -> io::Result<Settings> {
-    let file = File::open("/etc/backupd/config.json")?;
+    let file_path = match env::var("CONFIG_FILE") {
+        Ok(val) => val,
+        Err(env::VarError::NotPresent) => {
+            "./config.json".into()
+        },
+        Err(err) => panic!(err),
+    };
+
+    let file = File::open(&file_path)?;
     let agents = from_reader(file)?;
 
     Ok(Settings { agents, })
