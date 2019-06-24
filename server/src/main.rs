@@ -6,7 +6,7 @@ use std::fs::File;
 use std::net::{TcpListener, TcpStream};
 use openssl::memcmp;
 
-use backupd::Handshake;
+use backupd::{Handshake, Ack};
 
 use serde::Deserialize;
 use log::{info, debug, trace};
@@ -56,12 +56,10 @@ fn get_settings() -> io::Result<Settings> {
 
 fn server_handler(settings: &Settings, stream: TcpStream) -> io::Result<()> {
     let handshake: Handshake = rmp_serde::from_read(stream).expect("Failed to read handshake");
-    for agent in &settings.agents {
-        if agent.get_name() == handshake.name && agent.secret_matches(&handshake.secret) {
-            debug!("Found match for agent: {}", agent.get_name());
-            break;
-        }
-    }
+    let _agent = settings.agents
+            .iter()
+            .filter(|agent| agent.get_name() == handshake.name && agent.secret_matches(&handshake.secret))
+            .next();
 
     Ok(())
 }

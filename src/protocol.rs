@@ -5,7 +5,7 @@ pub const VERSION: u64 = 1;
 
 /// A handshake message is the first thing sent by the server after establishing
 /// a connection to the agent.
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Handshake {
     pub version: u64,
     pub name: String,
@@ -15,10 +15,15 @@ pub struct Handshake {
 /// The start of a file stream.
 /// Following this message is a file `size` bytes long to be included in the current
 /// backup operation.
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct FileHeader {
     pub path: String,
     pub size: u64,
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct Ack {
+    pub success: bool,
 }
 
 #[cfg(test)]
