@@ -1,6 +1,7 @@
 use std::io;
 use std::env;
 use std::thread;
+use std::sync::Arc;
 use std::fs::File;
 use std::net::{TcpListener, TcpStream};
 use openssl::memcmp;
@@ -53,8 +54,14 @@ fn get_settings() -> io::Result<Settings> {
     Ok(Settings { agents, })
 }
 
-fn server_handler(stream: TcpStream) -> io::Result<()> {
-    let _handshake: Handshake = rmp_serde::from_read(stream).expect("Failed to read handshake");
+fn server_handler(settings: &Settings, stream: TcpStream) -> io::Result<()> {
+    let handshake: Handshake = rmp_serde::from_read(stream).expect("Failed to read handshake");
+    for agent in &settings.agents {
+        if agent.get_name() == handshake.name && agent.secret_matches(&handshake.secret) {
+            debug!("Found match for agent: {}", agent.get_name());
+            break;
+        }
+    }
 
     Ok(())
 }
@@ -63,18 +70,21 @@ fn main() {
     env_logger::init();
 
     info!("Loading settings...");
-    let _settings = get_settings().expect("Unable to load settings");
+    let settings = Arc::new(get_settings().expect("Unable to load settings"));
 
     let listener = TcpListener::bind("").expect("Unable to bind");
     loop {
         let (stream, addr) = listener.accept().expect("Failed to accept connection...");
         debug!("Got connection from {:?}", addr);
 
+        let s = settings.clone();
         thread::spawn(move || {
             trace!("Connection info: TTL={}", stream.ttl().unwrap());
-            if let Err(err) = server_handler(stream) {
+            if let Err(err) = server_handler(&s, stream) {
                 eprintln!("Got error from thread handler for {}: {:?}", addr, err);
             }
+
+            debug!("Closing connection to {:?}", addr);
         });
     }
 }
