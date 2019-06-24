@@ -54,12 +54,14 @@ fn get_settings() -> io::Result<Settings> {
     Ok(Settings { agents, })
 }
 
-fn server_handler(settings: &Settings, stream: TcpStream) -> io::Result<()> {
-    let handshake: Handshake = rmp_serde::from_read(stream).expect("Failed to read handshake");
-    let _agent = settings.agents
+fn server_handler(settings: &Settings, mut stream: TcpStream) -> io::Result<()> {
+    let handshake: Handshake = rmp_serde::from_read(&stream).expect("Failed to read handshake");
+    let agent = settings.agents
             .iter()
             .filter(|agent| agent.get_name() == handshake.name && agent.secret_matches(&handshake.secret))
             .next();
+
+    rmp_serde::encode::write(&mut stream, &Ack{ success: agent.is_some() }).expect("Failed to write");
 
     Ok(())
 }
