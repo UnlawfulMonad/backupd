@@ -21,9 +21,10 @@ pub struct FileHeader {
     pub size: u64,
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Ack {
     pub success: bool,
+    pub message: Option<String>,
 }
 
 #[cfg(test)]

@@ -61,7 +61,7 @@ fn server_handler(settings: &Settings, mut stream: TcpStream) -> io::Result<()> 
             .filter(|agent| agent.get_name() == handshake.name && agent.secret_matches(&handshake.secret))
             .next();
 
-    rmp_serde::encode::write(&mut stream, &Ack{ success: agent.is_some() }).expect("Failed to write");
+    rmp_serde::encode::write(&mut stream, &Ack{ success: agent.is_some(), message: None }).expect("Failed to write");
 
     Ok(())
 }
