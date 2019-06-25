@@ -1,6 +1,7 @@
 use std::io;
 use std::env;
 use std::thread;
+use std::time::Duration;
 use std::sync::Arc;
 use std::fs::File;
 use std::net::{TcpListener, TcpStream};
@@ -55,12 +56,17 @@ fn get_settings() -> io::Result<Settings> {
 }
 
 fn server_handler(settings: &Settings, mut stream: TcpStream) -> io::Result<()> {
+    stream.set_read_timeout(Some(Duration::from_secs(5)))?;
+
     let handshake: Handshake = rmp_serde::from_read(&stream).expect("Failed to read handshake");
+
+    // Find if we have an agent that corresponds to the sent credentials
     let agent = settings.agents
             .iter()
             .filter(|agent| agent.get_name() == handshake.name && agent.secret_matches(&handshake.secret))
             .next();
 
+    // Respond
     rmp_serde::encode::write(&mut stream, &Ack{ success: agent.is_some(), message: None }).expect("Failed to write");
 
     Ok(())
