@@ -10,7 +10,7 @@ fn test_slow_handshake() {
     let t = thread::spawn(move || {
         let mut stream = TcpStream::connect("127.0.0.1:34215").unwrap();
         let handshake = Handshake{ version: 1, name: "name".into(), secret: "secret".into() };
-        let data = rmp_serde::to_vec(&handshake).unwrap();
+        let data = bincode::serialize(&handshake).unwrap();
         stream.write_all(&data[..5]).unwrap();
         thread::sleep(Duration::from_secs(1));
 
@@ -18,7 +18,7 @@ fn test_slow_handshake() {
     });
 
     let (stream, _) = listen.accept().unwrap();
-    let handshake: Handshake = rmp_serde::from_read(stream).expect("Failed to read handshake");
+    let handshake: Handshake = bincode::deserialize_from(stream).expect("Failed to read handshake");
     assert_eq!(handshake.version, 1);
     assert_eq!(handshake.name, "name");
     assert_eq!(handshake.secret, "secret");

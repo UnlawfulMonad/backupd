@@ -3,6 +3,36 @@ use serde::{Serialize, Deserialize};
 
 pub const VERSION: u64 = 1;
 
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub enum Message {
+    Handshake(Handshake),
+    FileHeader(FileHeader),
+    Ack(Ack),
+}
+
+impl Message {
+    pub fn is_ack(&self) -> bool {
+        match *self {
+            Message::Ack(_) => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_handshake(&self) -> bool {
+        match *self {
+            Message::Handshake(_) => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_file_header(&self) -> bool {
+        match *self {
+            Message::FileHeader(_) => true,
+            _ => false,
+        }
+    }
+}
+
 /// A handshake message is the first thing sent by the server after establishing
 /// a connection to the agent.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -30,16 +60,12 @@ pub struct Ack {
 #[cfg(test)]
 mod test {
     use super::*;
-    use rmp_serde::{
-        to_vec as pack,
-        from_slice as unpack,
-    };
 
     #[test]
     fn test_serialize_handshake() {
         let hs = Handshake { version: 0, name: String::new(), secret: String::new() };
-        let hs_bin = pack(&hs).unwrap();
-        let hs_deserialized = unpack(&hs_bin[..]).unwrap();
+        let hs_bin = bincode::serialize(&hs).unwrap();
+        let hs_deserialized = bincode::deserialize(&hs_bin[..]).unwrap();
         assert_eq!(hs, hs_deserialized);
     }
 }
