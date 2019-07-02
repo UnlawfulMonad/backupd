@@ -5,7 +5,6 @@ pub const VERSION: u64 = 1;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Message {
-    Handshake(Handshake),
     FileHeader(FileHeader),
     Ack(Ack),
 }
@@ -14,13 +13,6 @@ impl Message {
     pub fn is_ack(&self) -> bool {
         match *self {
             Message::Ack(_) => true,
-            _ => false,
-        }
-    }
-
-    pub fn is_handshake(&self) -> bool {
-        match *self {
-            Message::Handshake(_) => true,
             _ => false,
         }
     }
