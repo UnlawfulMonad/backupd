@@ -1,16 +1,16 @@
-use std::io;
+use openssl::memcmp;
 use std::env;
+use std::fs::File;
+use std::io;
+use std::net::{TcpListener, TcpStream};
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
-use std::sync::Arc;
-use std::fs::File;
-use std::net::{TcpListener, TcpStream};
-use openssl::memcmp;
 
-use backupd::{Handshake, Ack};
+use backupd::{Ack, Handshake};
 
+use log::{debug, info, trace};
 use serde::Deserialize;
-use log::{info, debug, trace};
 
 use serde_json::from_reader;
 
@@ -52,22 +52,33 @@ fn get_settings() -> io::Result<Settings> {
     let file = File::open(&file_path)?;
     let agents = from_reader(file)?;
 
-    Ok(Settings { agents, })
+    Ok(Settings { agents })
 }
 
 fn server_handler(settings: &Settings, mut stream: TcpStream) -> io::Result<()> {
     stream.set_read_timeout(Some(Duration::from_secs(5)))?;
 
-    let handshake: Handshake = bincode::deserialize_from(&stream).expect("Failed to read handshake");
+    let handshake: Handshake =
+        bincode::deserialize_from(&stream).expect("Failed to read handshake");
 
     // Find if we have an agent that corresponds to the sent credentials
-    let agent = settings.agents
-            .iter()
-            .filter(|agent| agent.get_name() == handshake.name && agent.secret_matches(&handshake.secret))
-            .next();
+    let agent = settings
+        .agents
+        .iter()
+        .filter(|agent| {
+            agent.get_name() == handshake.name && agent.secret_matches(&handshake.secret)
+        })
+        .next();
 
     // Respond
-    bincode::serialize_into(&mut stream, &Ack{ success: agent.is_some(), message: None }).expect("Failed to write");
+    bincode::serialize_into(
+        &mut stream,
+        &Ack {
+            success: agent.is_some(),
+            message: None,
+        },
+    )
+    .expect("Failed to write");
 
     Ok(())
 }

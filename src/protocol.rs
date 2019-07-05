@@ -1,5 +1,4 @@
-use serde::{Serialize, Deserialize};
-
+use serde::{Deserialize, Serialize};
 
 pub const VERSION: u64 = 1;
 
@@ -28,13 +27,13 @@ pub struct Ack {
 }
 
 macro_rules! message_helper {
-    ($name:ident, $type:ident) => (
+    ($name:ident, $type:ident) => {
         #[allow(dead_code)]
         #[inline]
         pub fn $name<R: ::std::io::Read>(r: R) -> super::error::Result<$type> {
             Ok(::bincode::deserialize_from(r)?)
         }
-    )
+    };
 }
 
 message_helper!(read_handshake, Handshake);
@@ -47,7 +46,11 @@ mod test {
 
     #[test]
     fn test_serialize_handshake() {
-        let hs = Handshake { version: 0, name: String::new(), secret: String::new() };
+        let hs = Handshake {
+            version: 0,
+            name: String::new(),
+            secret: String::new(),
+        };
         let hs_bin = bincode::serialize(&hs).unwrap();
         let hs_deserialized = bincode::deserialize(&hs_bin[..]).unwrap();
         assert_eq!(hs, hs_deserialized);
