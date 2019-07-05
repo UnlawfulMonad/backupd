@@ -1,4 +1,4 @@
-FROM rust:1.35.0 AS build
+FROM rust:1.36.0 AS build
 
 RUN mkdir -p /code
 WORKDIR /code
