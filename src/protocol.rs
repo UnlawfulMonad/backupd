@@ -27,6 +27,20 @@ pub struct Ack {
     pub message: Option<String>,
 }
 
+macro_rules! message_helper {
+    ($name:ident, $type:ident) => (
+        #[allow(dead_code)]
+        #[inline]
+        pub fn $name<R: ::std::io::Read>(r: R) -> super::error::Result<$type> {
+            Ok(::bincode::deserialize_from(r)?)
+        }
+    )
+}
+
+message_helper!(read_handshake, Handshake);
+message_helper!(read_ack, Ack);
+message_helper!(read_file_header, FileHeader);
+
 #[cfg(test)]
 mod test {
     use super::*;

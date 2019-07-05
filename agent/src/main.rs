@@ -1,9 +1,8 @@
 use std::env;
 
-use std::io::Read;
 use std::net::TcpStream;
 
-use backupd::{Handshake, Ack};
+use backupd::protocol::{read_ack, Handshake};
 use backupd::error as e;
 use backupd::error::ResultExt;
 
@@ -29,10 +28,6 @@ fn client_start() -> e::Result<()> {
     let _ack = read_ack(&conn)?;
 
     Ok(())
-}
-
-fn read_ack<R: Read>(s: R) -> e::Result<Ack> {
-    Ok(bincode::deserialize_from(s)?)
 }
 
 fn main() {
