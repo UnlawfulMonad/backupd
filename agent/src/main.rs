@@ -1,4 +1,5 @@
 use std::env;
+use log::error;
 
 use std::net::TcpStream;
 
@@ -29,7 +30,10 @@ fn client_start() -> e::Result<()> {
     };
     bincode::serialize_into(&conn, &hs)?;
 
-    let _ack = read_ack(&conn)?;
+    let ack = read_ack(&conn)?;
+    if !ack.success {
+        return Err(e::ErrorKind::HandshakeError(ack.message).into())
+    }
 
     Ok(())
 }
@@ -37,6 +41,6 @@ fn client_start() -> e::Result<()> {
 fn main() {
     env_logger::init();
     if let Err(err) = client_start() {
-        eprintln!("Error in client_start: {:?}", err);
+        error!("Error in client_start: {:?}", err);
     }
 }

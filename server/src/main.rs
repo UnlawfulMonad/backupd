@@ -36,7 +36,7 @@ impl Agent {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize)]
 struct Settings {
     agents: Vec<Agent>,
 }
@@ -50,9 +50,9 @@ fn get_settings() -> io::Result<Settings> {
     };
 
     let file = File::open(&file_path)?;
-    let agents = from_reader(file)?;
+    let settings = from_reader(file)?;
 
-    Ok(Settings { agents })
+    Ok(settings)
 }
 
 fn server_handler(settings: &Settings, mut stream: TcpStream) -> io::Result<()> {
@@ -89,7 +89,7 @@ fn main() {
     info!("Loading settings...");
     let settings = Arc::new(get_settings().expect("Unable to load settings"));
 
-    let listener = TcpListener::bind("").expect("Unable to bind");
+    let listener = TcpListener::bind("0.0.0.0:2345").expect("Unable to bind");
     loop {
         let (stream, addr) = listener.accept().expect("Failed to accept connection...");
         debug!("Got connection from {:?}", addr);
