@@ -37,7 +37,7 @@ macro_rules! message_helper {
 
         #[allow(dead_code)]
         #[inline]
-        pub fn $write_name<W: ::std::io::Write>(t: &$type, w: W) -> super::error::Result<()> {
+        pub fn $write_name<W: ::std::io::Write>(w: W, t: &$type) -> super::error::Result<()> {
             ::bincode::serialize_into(w, t)?;
             Ok(())
         }

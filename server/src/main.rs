@@ -7,7 +7,7 @@ use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
-use backupd::{Ack, Handshake};
+use backupd::protocol::{read_handshake, write_ack, Ack};
 
 use log::{debug, info, trace};
 use serde::Deserialize;
@@ -58,8 +58,7 @@ fn get_settings() -> io::Result<Settings> {
 fn server_handler(settings: &Settings, mut stream: TcpStream) -> io::Result<()> {
     stream.set_read_timeout(Some(Duration::from_secs(5)))?;
 
-    let handshake: Handshake =
-        bincode::deserialize_from(&stream).expect("Failed to read handshake");
+    let handshake = read_handshake(&stream).expect("Failed to read handshake");
 
     // Find if we have an agent that corresponds to the sent credentials
     let agent = settings
@@ -71,14 +70,10 @@ fn server_handler(settings: &Settings, mut stream: TcpStream) -> io::Result<()> 
         .next();
 
     // Respond
-    bincode::serialize_into(
+    write_ack(
         &mut stream,
-        &Ack {
-            success: agent.is_some(),
-            message: None,
-        },
-    )
-    .expect("Failed to write");
+        &Ack { success: agent.is_some(), message: None, }
+    ).expect("Failed to write");
 
     Ok(())
 }

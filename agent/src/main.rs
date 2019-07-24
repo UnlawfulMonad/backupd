@@ -34,7 +34,7 @@ pub fn client_start() -> e::Result<()> {
 
     // Perform handshake
     let hs = Handshake {
-        version: backupd::VERSION,
+        version: backupd::protocol::VERSION,
         name: agent_name.clone(),
         secret: agent_secret,
     };
