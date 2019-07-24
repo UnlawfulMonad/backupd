@@ -27,18 +27,26 @@ pub struct Ack {
 }
 
 macro_rules! message_helper {
-    ($name:ident, $type:ident) => {
+    // We should be able to simplify this once `concat_idents` is stablized.
+    ($read_name:ident, $write_name:ident, $type:ident) => {
         #[allow(dead_code)]
         #[inline]
-        pub fn $name<R: ::std::io::Read>(r: R) -> super::error::Result<$type> {
+        pub fn $read_name<R: ::std::io::Read>(r: R) -> super::error::Result<$type> {
             Ok(::bincode::deserialize_from(r)?)
+        }
+
+        #[allow(dead_code)]
+        #[inline]
+        pub fn $write_name<W: ::std::io::Write>(t: &$type, w: W) -> super::error::Result<()> {
+            ::bincode::serialize_into(w, t)?;
+            Ok(())
         }
     };
 }
 
-message_helper!(read_handshake, Handshake);
-message_helper!(read_ack, Ack);
-message_helper!(read_file_header, FileHeader);
+message_helper!(read_handshake, write_handshake, Handshake);
+message_helper!(read_ack, write_ack, Ack);
+message_helper!(read_file_header, write_file_header, FileHeader);
 
 #[cfg(test)]
 mod test {
