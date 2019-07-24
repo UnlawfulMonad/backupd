@@ -1,5 +1,5 @@
 use std::env;
-use log::error;
+use log::{info, error};
 
 use std::net::TcpStream;
 
@@ -7,7 +7,15 @@ use backupd::error as e;
 use backupd::error::ResultExt;
 use backupd::protocol::{read_ack, Handshake};
 
-fn client_start() -> e::Result<()> {
+/// The main client entrypoint. Starts the agent and the main loop.
+///
+/// The client pulls configuration from the following environment variables:
+///   - `AGENT_NAME`
+///   - `AGENT_SECRET`
+///   - `SERVER_ADDRESS`
+pub fn client_start() -> e::Result<()> {
+    info!("Starting client...");
+
     // Load config
     let agent_name =
         env::var("AGENT_NAME").chain_err(|| "Missing environment variable: AGENT_NAME")?;
@@ -23,6 +31,8 @@ fn client_start() -> e::Result<()> {
 
     // Connect to the server
     let conn = TcpStream::connect(&server_address)?;
+
+    // Perform handshake
     let hs = Handshake {
         version: backupd::VERSION,
         name: agent_name.clone(),
