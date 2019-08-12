@@ -1,4 +1,4 @@
-use backupd::Handshake;
+use backupd::protocol::Handshake;
 use std::io::Write;
 use std::thread;
 use std::time::Duration;
