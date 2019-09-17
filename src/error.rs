@@ -12,5 +12,6 @@ error_chain! {
         Io(::std::io::Error);
         VarError(::std::env::VarError);
         Bincode(Box<::bincode::ErrorKind>);
+        Sqlite(::rusqlite::Error);
     }
 }
