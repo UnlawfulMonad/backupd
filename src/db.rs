@@ -1,22 +1,28 @@
 use std::path::Path;
 use rusqlite::Connection;
 
-use regex::Regex;
-
 pub struct DB {
     conn: Connection,
 }
 
 impl DB {
-    pub fn new<P: AsRef<Path>>(conn: Connection) -> DB {
+    pub fn new<P: AsRef<Path>>(path: P, key: &str) -> DB {
+        let conn = Connection::open(path).expect("Failed to open DB");
+        conn.pragma_update(None, "key", &key).unwrap();
         DB { conn }
     }
+}
 
-    pub fn set_key(&self, key: &str) {
-        let reg = Regex::new("^[^[:space:]]+$").unwrap();
-        assert!(reg.is_match(key));
+#[cfg(test)]
+mod test {
+    use super::*;
+    use std::fs::remove_file;
 
-        let cmd = format!("PRAGMA key = '{}';", key);
-        self.conn.execute_batch(&cmd).unwrap();
+    #[test]
+    fn open_new_db() {
+        let db = DB::new("test.db", "test");
+        drop(db);
+
+        remove_file("test.db").unwrap();
     }
 }
