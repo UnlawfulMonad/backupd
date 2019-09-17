@@ -17,11 +17,11 @@ fi
 case "$1" in
     server)
         shift
-        server $@
+        exec server $@
         ;;
     client)
         shift
-        client $@
+        exec client $@
         ;;
     *)
         echo "Unknown value $1"

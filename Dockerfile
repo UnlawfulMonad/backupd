@@ -1,6 +1,8 @@
-FROM rust:1.36.0 AS build
+FROM rust:1.37.0 AS build
 
-RUN mkdir -p /code
+RUN mkdir -p /code && \
+    apt-get update && \
+    apt-get install -y libsqlcipher-dev sqlite3
 WORKDIR /code
 
 COPY . /code
@@ -8,7 +10,7 @@ RUN cargo build --release --all
 
 FROM debian:buster
 RUN apt-get update && \
-    apt-get install -y openssl && \
+    apt-get install -y libsqlcipher0 openssl && \
     apt-get clean -y
 
 COPY --from=build /code/target/release/server /server
