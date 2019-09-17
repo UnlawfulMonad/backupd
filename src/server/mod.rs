@@ -39,6 +39,7 @@ impl Agent {
 #[derive(Clone, Debug, Deserialize)]
 pub struct Settings {
     agents: Vec<Agent>,
+    key: Option<String>,
 }
 
 fn get_settings() -> io::Result<Settings> {
