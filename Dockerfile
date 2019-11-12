@@ -1,4 +1,4 @@
-FROM rust:1.37.0 AS build
+FROM rust:1.39.0 AS build
 
 RUN mkdir -p /code && \
     apt-get update && \
